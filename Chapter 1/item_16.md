@@ -22,31 +22,53 @@ public class Point {
 ### ✅ 3. 올바른 예시
 
 ```java
+import java.time.LocalDate;
+
 // 올바른 설계 - 필드 은닉과 접근자 메서드 제공
-public class Point {
-    private double x;
-    private double y;
-
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public void setX(double x) { this.x = x; }
-    public void setY(double y) { this.y = y; }
-}
-```
-
-### ✅ 4. 불변 클래스의 예외
-
-```java
-public final class Time {
-    public final int hour;
-    public final int minute;
-
-    public Time(int hour, int minute) {
-        this.hour = hour;
-        this.minute = minute;
+public class Student {
+    private LocalDate enrollmentDate;
+    private Long fee;
+    private String name;
+    
+    public Student(LocalDate enrollmentDate, Long fee, String name) {
+        this.enrollmentDate = enrollmentDate;
+        this.fee = fee;
+        this.name = name;
+    }
+    
+    public LocalDate getEnrollmentDate() {
+        return enrollmentDate;
+    }
+    public Long getFee() {
+        return fee;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setFee(Long fee) {
+        this.fee = fee;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 }
 ```
+
+### ✅ 4. getter, setter 를 사용하면 public 과 같은 것 아닌가 ?
+- 현재 Student 의 상태를 봤을 때는 public 필드와 다를 바가 없어 보인다.
+- 하지만 요구사항 추가로 등록일 이후 1년이 지나면 수업료를 10_000원 할인 해준다고 하자.
+- 이 경우 getFee() 메서드에 로직을 추가하면 된다.
+```java
+public Long getFee() {
+    if (enrollmentDate.plusYears(1).isBefore(LocalDate.now())) {
+        return fee - 10_000;
+    }
+    return fee;
+}
+```
+- 만약 public 필드였다면, fee 를 조회하는 모든 로직에 이 로직을 추가해야 한다.
+- 이렇게 되면 코드가 중복되고, 유지보수가 어려워진다.
+- 따라서, 처음에는 public과 같아 보인다고 하더라도, 필드를 감추고 메서드를 통해 접근하는 것이 캡슐화를 지키는 올바른 방법이다.
 
 ### ✅ 5. 정리
 •	클래스의 필드는 무조건 감추고 메서드로 제공하라.
