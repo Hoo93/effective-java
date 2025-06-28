@@ -37,3 +37,28 @@ public class InstrumentedSet<E> implements Set<E> {
 ```
 장점: 내부 Set 구현이 바뀌어도 영향을 받지 않음.
 → 버그 발생 가능성 감소, 확장성 향상
+
+❌ 잘못된 상속 예시: InstrumentedHashSet (상속 기반)
+```java
+public class InstrumentedHashSet<E> extends HashSet<E> {
+    private int addCount = 0;
+
+    @Override
+    public boolean add(E e) {
+        addCount++;
+        return super.add(e);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        addCount += c.size();
+        return super.addAll(c);
+    }
+
+    public int getAddCount() {
+        return addCount;
+    }
+}
+```
+문제점: super.addAll 내부적으로 add를 호출하므로 addCount가 이중으로 증가함.
+이는 HashSet 내부 구현 변경에 의해 버그가 발생할 수 있음.
